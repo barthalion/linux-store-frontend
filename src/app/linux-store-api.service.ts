@@ -137,7 +137,7 @@ export class LinuxStoreApiService {
     }
     
     if (collectionId === 'recently-updated') {
-      return this.getRecentlyUpdatedApps();
+      return this.getRecentlyUpdatedApps(5);
     } else if (collectionId === 'popular') {
       return of(POPULARAPPS);
     } else if (collectionId === 'editors-choice-apps') {
@@ -149,10 +149,12 @@ export class LinuxStoreApiService {
     }
   }
 
-  getRecentlyUpdatedApps(): Observable<App[]> {
-    const request = '/apps/collection/recently-updated';
+  getRecentlyUpdatedApps(limit?: number): Observable<App[]> {
+    const request = limit > 0 ?
+      `/apps/collection/recently-updated/${limit}` :
+      '/apps/collection/recently-updated/';
 
-    if (this.appListCache[request] == null && !this.performingRequest[request]) {
+      if (this.appListCache[request] == null && !this.performingRequest[request]) {
       this.performingRequest[request] = true;
       return this.http.get<App[]>(`${this.baseUrl}${request}`)
         .pipe(
