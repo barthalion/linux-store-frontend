@@ -24,6 +24,8 @@ interface HashTable<T> {
 
 }
 
+const RECENLY_UPDATED_LIMIT = 5;
+
 @Injectable()
 export class LinuxStoreApiService {
 
@@ -141,7 +143,7 @@ export class LinuxStoreApiService {
     }
     
     if (collectionId === 'recently-updated') {
-      return this.getRecentlyUpdatedApps();
+      return this.getRecentlyUpdatedApps(RECENLY_UPDATED_LIMIT);
     } else if (collectionId === 'popular') {
       return of(POPULARAPPS);
     } else if (collectionId === 'editors-choice-apps') {
@@ -153,8 +155,10 @@ export class LinuxStoreApiService {
     }
   }
 
-  getRecentlyUpdatedApps(): Observable<App[]> {
-    const request = '/apps/collection/recently-updated';
+  getRecentlyUpdatedApps(limit?: number): Observable<App[]> {
+    const request = limit > 0 ?
+      `/apps/collection/recently-updated/${limit}` :
+      '/apps/collection/recently-updated/';
 
     if (this.appListCache[request] == null && !this.performingRequest[request]) {
       this.performingRequest[request] = true;
